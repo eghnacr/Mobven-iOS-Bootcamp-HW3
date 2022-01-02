@@ -8,9 +8,15 @@
 import Foundation
 
 class CalculatorBrain {
-    //istenen işlemler + - * / bonus C CE =
-    //standford university ios 9 > youtube video 1 ya da 2
-    private var accumulator: Double = 0
+
+    private var accumulator: Double = 0 {
+        didSet {
+            oldAccumulator = oldValue
+        }
+    }
+
+    private var oldAccumulator = 0.0
+    private var selectedOperation: ((Double, Double) -> Double)?
 
     var result: Double {
         get {
@@ -24,11 +30,38 @@ class CalculatorBrain {
         switch operation {
         case "√":
             accumulator = sqrt(result)
+        case "±":
+            accumulator = -accumulator
+        case "+":
+            doOperation()
+            selectedOperation = { $0 + $1 }
+        case "−":
+            doOperation()
+            selectedOperation = { $0 - $1 }
+        case "÷":
+            doOperation()
+            selectedOperation = { $0 / $1 }
+        case "×":
+            doOperation()
+            selectedOperation = { $0 * $1 }
         case "=":
-            break
+            doOperation()
+        case "%":
+            accumulator /= 100
+        case "C":
+            accumulator = 0
+        case "AC":
+            accumulator = 0
+            oldAccumulator = 0
         default:
             break
         }
+    }
+
+    func doOperation() {
+        if selectedOperation == nil { return }
+        accumulator = selectedOperation!(oldAccumulator, accumulator)
+        selectedOperation = nil
     }
 
     func setOperand(_ value: Double) {
