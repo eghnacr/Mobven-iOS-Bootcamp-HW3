@@ -9,43 +9,41 @@ import UIKit
 
 class CalculatorViewController: UIViewController {
 
-    @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet private weak var resultLabel: UILabel!
+    @IBOutlet weak var acButton: UIButton!
 
-    @IBOutlet var digitButtons: [UIButton]!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
-
-    private var userIsTyping = false
-
-    private var brain = CalculatorBrain()
+    private let brain = CalculatorBrain()
+    private var isUserTyping = false
 
     var result: Double {
         get {
-            return Double(resultLabel.text ?? "0.0") ?? 0.0
+            resultLabel.text!.toDouble()
         }
         set {
-            resultLabel.text = String(newValue)
+            acButton.titleLabel?.text = newValue == 0 ? "AC" : "C"
+            resultLabel.text = newValue.toString()
         }
     }
 
     @IBAction func digitButtonTapped(_ sender: UIButton) {
-        if userIsTyping {
-            var resultText = String(Int(result))
-            resultText = resultText + String(sender.tag)
-            result = NSString(string: resultText).doubleValue
+        let digit = sender.tag
+        if isUserTyping {
+            resultLabel.text! += String(digit)
         } else {
-            result = Double(sender.tag)
-            userIsTyping.toggle()
+            result = Double(digit)
+            isUserTyping.toggle()
         }
     }
 
+    @IBAction func commaButtonTapped(_ sender: UIButton) {
+        resultLabel.text! += "."
+        isUserTyping = true
+    }
     @IBAction func operationButtonTapped(_ sender: UIButton) {
-        userIsTyping = false
+        let operation = sender.titleLabel!.text!
+        isUserTyping = false
         brain.setOperand(result)
-        brain.performOperation(sender.titleLabel?.text ?? "")
+        brain.performOperation(operation)
         result = brain.result
     }
 }
