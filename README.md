@@ -1,5 +1,7 @@
 # HW3
 
+<img src="ss.png" width="390" height="844" />
+
 1- Date class’ına 4 adet extension yazılacak
 - .day parametresiyle gün bilgisini döndüren
 - .month parametresiyle ay bilgisini döndüren
